@@ -53,54 +53,26 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-black text-white overflow-x-hidden">
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center pt-16">
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
-        </div>
+      <section className="relative min-h-screen flex items-center justify-center pt-16 overflow-hidden">
+        {/* Hero Background Image */}
+        <div className="absolute inset-0 bg-[url('/images/homepage-hero.jpg.jpeg')] bg-no-repeat bg-center bg-cover" />
+        <div className="absolute inset-0 bg-black/40" />
 
         <div className="relative max-w-7xl mx-auto px-6 py-32 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
-            className="mb-12"
-          >
-            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 text-xs font-medium tracking-wider uppercase">
-              <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-              Now in Public Beta
-            </span>
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: 'easeOut', delay: 0.1 }}
-            className="text-5xl md:text-7xl lg:text-8xl font-light tracking-tight leading-[1.05] mb-8"
-          >
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-light tracking-tight leading-[1.05] mb-8 text-white">
             One Profile.<br />
             <span className="font-bold">Every Brand.</span>
-          </motion.h1>
+          </h1>
 
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
-            className="text-lg md:text-xl text-white/60 max-w-3xl mx-auto mb-12 leading-relaxed"
-          >
+          <p className="text-lg md:text-xl text-white/80 max-w-3xl mx-auto mb-12 leading-relaxed text-shadow-lg">
             Enter your body measurements once. Instantly find your perfect size across 50+ fashion brands.
             No more guessing. No more returns. Just clothes that fit.
-          </motion.p>
+          </p>
 
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: 'easeOut', delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
-          >
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/auth/signup"
-              className="group flex items-center justify-center gap-2 px-8 py-4 bg-white text-black font-medium rounded-full hover:bg-white/90 transition-all hover:shadow-[0_0_40px_rgba(255,255,255,0.2)] w-full sm:w-auto"
+              className="group flex items-center justify-center gap-2 px-8 py-4 bg-white/20 text-black font-medium rounded-full hover:bg-white/30 transition-all hover:shadow-[0_0_40px_rgba(255,255,255,0.2)] w-full sm:w-auto"
             >
               Get My Size Profile
               <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
@@ -111,28 +83,7 @@ export default function Home() {
             >
               See Supported Brands
             </Link>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: 'easeOut', delay: 0.5 }}
-            className="mt-16 flex flex-wrap items-center justify-center gap-8 text-white/40 font-mono text-sm"
-          >
-            {brands.map((brand, i) => (
-              <motion.span
-                key={brand.name}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.5 + i * 0.05 }}
-                className="flex items-center gap-2 hover:text-white/70 transition-colors cursor-default"
-              >
-                <span className="font-bold tracking-tighter">{brand.name}</span>
-                <span className="text-[10px] uppercase tracking-wider text-white/20 hidden md:inline">{brand.tagline}</span>
-                {i < brands.length - 1 && <span className="text-white/10 mx-2">·</span>}
-              </motion.span>
-            ))}
-          </motion.div>
+          </div>
         </div>
 
         <motion.div
@@ -147,7 +98,7 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* How It Works */}
+      {/* Stats Section */}
       <section className="py-28 lg:py-32 bg-black border-t border-white/10">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div

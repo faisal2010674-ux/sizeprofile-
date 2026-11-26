@@ -39,7 +39,7 @@ const PLANS: PricingPlan[] = [
   {
     id: 'plus',
     name: 'Plus',
-    price: 99,
+    price: 299,
     period: 'Month',
     description: 'For regular shoppers who want more',
     features: [
@@ -60,7 +60,7 @@ const PLANS: PricingPlan[] = [
   {
     id: 'pro',
     name: 'Pro',
-    price: 199,
+    price: 649,
     period: 'Month',
     description: 'For power users and fashion professionals',
     features: [
@@ -104,7 +104,7 @@ const FAQ = [
   },
   {
     question: 'Are Plus and Pro subscriptions active now?',
-    answer: 'No. This is a demonstration project for a college presentation. The Plus (₹99/mo) and Pro (₹199/mo) plans show proposed pricing only. Clicking their buttons will show a "Coming Soon" message. No payment is processed.',
+    answer: 'No. This is a demonstration project for a college presentation. The Plus (₹299/mo) and Pro (₹649/mo) plans show proposed pricing only. Clicking their buttons will show a "Coming Soon" message. No payment is processed.',
   },
   {
     question: 'What happens to my data if I don\'t upgrade?',

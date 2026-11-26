@@ -23,37 +23,29 @@ const TSHIRT_COLORS = [
   { name: 'Black', value: '#000000', border: '#333333' },
   { name: 'Grey', value: '#808080', border: '#666666' },
   { name: 'Navy', value: '#1e3a5f', border: '#152a4a' },
-  { name: 'Olive', value: '#556b2f', border: '#455828' },
-  { name: 'Burgundy', value: '#800020', border: '#66001a' },
-  { name: 'Mustard', value: '#daa520', border: '#b8860b' },
-  { name: 'Sage', value: '#9caf88', border: '#899b75' },
-  { name: 'Charcoal', value: '#36454f', border: '#2c3a43' },
-  { name: 'Cream', value: '#f5f5dc', border: '#e0e0cc' },
+  { name: 'Beige', value: '#f5f5dc', border: '#e0e0cc' },
 ];
 
 const PANTS_COLORS = [
   { name: 'Black', value: '#000000', border: '#333333' },
-  { name: 'Navy', value: '#1e3a5f', border: '#152a4a' },
-  { name: 'Charcoal', value: '#36454f', border: '#2c3a43' },
-  { name: 'Khaki', value: '#c3b091', border: '#a89a76' },
-  { name: 'Olive', value: '#556b2f', border: '#455828' },
+  { name: 'Blue denim', value: '#004869', border: '#003049' },
+  { name: 'Light denim', value: '#5a9bd5', border: '#3a7c9e' },
   { name: 'Grey', value: '#808080', border: '#666666' },
-  { name: 'Brown', value: '#8b4513', border: '#6b3410' },
-  { name: 'White', value: '#ffffff', border: '#e0e0e0' },
+  { name: 'Beige', value: '#f5f5dc', border: '#e0e0cc' },
 ];
 
-const TSHIRT_STYLES: { id: TShirtStyle; name: string; icon: string }[] = [
-  { id: 'regular', name: 'Regular', icon: '☐' },
-  { id: 'oversized', name: 'Oversized', icon: '□' },
-  { id: 'slim', name: 'Slim Fit', icon: '▭' },
-  { id: 'polo', name: 'Polo', icon: '⬟' },
+const TSHIRT_STYLES: { id: TShirtStyle; name: string }[] = [
+  { id: 'regular', name: 'Regular Fit' },
+  { id: 'oversized', name: 'Oversized' },
+  { id: 'slim', name: 'Slim Fit' },
+  { id: 'polo', name: 'Polo' },
 ];
 
-const PANTS_STYLES: { id: PantsStyle; name: string; icon: string }[] = [
-  { id: 'jeans', name: 'Jeans', icon: '👖' },
-  { id: 'formal', name: 'Formal', icon: '👔' },
-  { id: 'joggers', name: 'Joggers', icon: '🏃' },
-  { id: 'chinos', name: 'Chinos', icon: '👖' },
+const PANTS_STYLES: { id: PantsStyle; name: string }[] = [
+  { id: 'jeans', name: 'Jeans' },
+  { id: 'formal', name: 'Formal' },
+  { id: 'joggers', name: 'Joggers' },
+  { id: 'chinos', name: 'Chinos' },
 ];
 
 export default function VirtualMannequin({ userMeasurements, selectedBrandId }: VirtualMannequinProps) {
@@ -63,9 +55,10 @@ export default function VirtualMannequin({ userMeasurements, selectedBrandId }: 
   const [tshirtStyle, setTshirtStyle] = useState<TShirtStyle>('regular');
   const [pantsStyle, setPantsStyle] = useState<PantsStyle>('jeans');
   const [showRecommendations, setShowRecommendations] = useState(false);
+  const [internalSelectedBrandId, setInternalSelectedBrandId] = useState<string | undefined>(selectedBrandId);
 
   const brand = useMemo(() =>
-    BRANDS.find(b => b.id === selectedBrandId), [selectedBrandId]
+    BRANDS.find(b => b.id === internalSelectedBrandId), [internalSelectedBrandId]
   );
 
   const tshirtSizeChart = brand?.sizeCharts?.tops || [];
@@ -89,77 +82,47 @@ export default function VirtualMannequin({ userMeasurements, selectedBrandId }: 
     setViewMode('front');
   };
 
-  // SVG paths for mannequin body parts
-  const getMannequinPaths = (view: ViewMode) => {
-    const isBack = view === 'back';
+  // Base mannequin SVG - premium full-body fashion mannequin shape
+  const isBack = viewMode === 'back';
 
-    return {
-      // Main body outline
-      body: isBack
-        ? "M85,90 L65,110 L45,200 L60,210 L70,150 L70,300 L80,480 L120,480 L130,300 L130,150 L140,210 L155,200 L135,110 L115,90 Z"
-        : "M115,90 L135,110 L155,200 L140,210 L130,150 L130,300 L120,480 L80,480 L70,300 L70,150 L60,210 L45,200 L65,110 L85,90 Z",
+  const mannequinBody = isBack
+    ? "M50,50 L50,450 L150,450 L150,50 Z M50,50 L25,100 L45,250 L155,250 L175,100 Z"
+    : "M150,50 L150,450 L250,450 L250,50 Z M150,50 L175,100 L155,250 L55,250 L25,100 Z";
 
-      // T-shirt - Regular
-      tshirt_regular: isBack
-        ? "M70,105 L55,125 L45,205 L55,210 L80,210 L90,205 L80,125 Z"
-        : "M130,105 L145,125 L155,205 L145,210 L120,210 L110,205 L120,125 Z",
-
-      // T-shirt - Oversized
-      tshirt_oversized: isBack
-        ? "M65,100 L45,130 L35,220 L50,225 L85,225 L100,220 L90,130 Z"
-        : "M135,100 L155,130 L165,220 L150,225 L115,225 L100,220 L110,130 Z",
-
-      // T-shirt - Slim
-      tshirt_slim: isBack
-        ? "M75,105 L65,120 L58,200 L70,205 L85,205 L97,200 L90,120 Z"
-        : "M125,105 L135,120 L142,200 L130,205 L115,205 L103,200 L110,120 Z",
-
-      // T-shirt - Polo
-      tshirt_polo: isBack
-        ? "M70,105 L55,125 L45,205 L55,210 L80,210 L90,205 L80,125 Z"
-        : "M130,105 L145,125 L155,205 L145,210 L120,210 L110,205 L120,125 Z",
-
-      // Pants - Jeans
-      pants_jeans: isBack
-        ? "M78,205 L72,210 L65,480 L85,480 L85,460 L75,460 L78,440 L70,440 L70,210 Z M85,210 L92,210 L95,480 L115,480 L115,460 L105,460 L108,440 L100,440 L100,210 Z"
-        : "M122,205 L128,210 L135,480 L115,480 L115,460 L125,460 L122,440 L130,440 L130,210 Z M115,210 L108,210 L105,480 L85,480 L85,460 L95,460 L92,440 L100,440 L100,210 Z",
-
-      // Pants - Formal
-      pants_formal: isBack
-        ? "M78,205 L72,210 L68,480 L82,480 L82,460 L76,460 L78,440 L74,440 L74,210 Z M88,210 L94,210 L98,480 L112,480 L112,460 L104,460 L106,440 L102,440 L102,210 Z"
-        : "M122,205 L128,210 L132,480 L118,480 L118,460 L124,460 L122,440 L126,440 L126,210 Z M112,210 L106,210 L102,480 L88,480 L88,460 L96,460 L94,440 L98,440 L98,210 Z",
-
-      // Pants - Joggers
-      pants_joggers: isBack
-        ? "M78,205 L70,210 L62,450 L70,455 L78,450 L78,430 L72,430 L74,410 L70,410 L70,210 Z M88,210 L96,210 L104,450 L96,455 L88,450 L88,430 L94,430 L92,410 L96,410 L96,210 Z"
-        : "M122,205 L130,210 L138,450 L130,455 L122,450 L122,430 L128,430 L126,410 L130,410 L130,210 Z M112,210 L104,210 L96,450 L104,455 L112,450 L112,430 L106,430 L108,410 L104,410 L104,210 Z",
-
-      // Pants - Chinos
-      pants_chinos: isBack
-        ? "M78,205 L73,210 L68,475 L82,475 L82,455 L76,455 L78,435 L74,435 L74,210 Z M87,210 L93,210 L98,475 L112,475 L112,455 L104,455 L106,435 L102,435 L102,210 Z"
-        : "M122,205 L127,210 L132,475 L118,475 L118,455 L124,455 L122,435 L126,435 L126,210 Z M113,210 L107,210 L102,475 L88,475 L88,455 L96,455 L94,435 L98,435 L98,210 Z",
-    };
+  // T-shirt paths for different styles - properly proportioned
+  const tshirtPaths = {
+    regular: isBack
+      ? "M65,95 L50,115 L40,240 L60,245 L90,245 L95,240 L75,115 Z"
+      : "M135,95 L150,115 L160,240 L140,245 L110,245 L105,240 L125,115 Z",
+    oversized: isBack
+      ? "M60,90 L40,120 L25,260 L55,265 L100,265 L110,260 L95,120 Z"
+      : "M140,90 L155,120 L165,260 L135,265 L100,265 L90,260 L105,120 Z",
+    slim: isBack
+      ? "M70,95 L60,110 L52,230 L70,235 L92,235 L95,230 L85,110 Z"
+      : "M130,95 L140,110 L148,230 L120,235 L108,235 L105,230 L115,110 Z",
+    polo: isBack
+      ? "M65,95 L50,115 L40,240 L60,245 L90,245 L95,240 L75,115 Z"
+      : "M135,95 L150,115 L160,240 L140,245 L110,245 L105,240 L125,115 Z",
   };
 
-  const paths = getMannequinPaths(viewMode);
-
-  const getTshirtPath = () => {
-    switch (tshirtStyle) {
-      case 'oversized': return paths.tshirt_oversized;
-      case 'slim': return paths.tshirt_slim;
-      case 'polo': return paths.tshirt_polo;
-      default: return paths.tshirt_regular;
-    }
+  // Pants paths for different styles - proper separate legs, waistband
+  const pantsPaths = {
+    jeans: isBack
+      ? "M78,200 L70,210 L60,480 L80,480 L80,450 L70,450 L72,430 L68,430 L68,210 Z M85,210 L92,210 L95,480 L115,480 L115,440 L105,440 L105,210 Z"
+      : "M122,200 L130,210 L140,480 L120,480 L120,450 L130,450 L138,430 L142,430 L142,210 Z M115,210 L108,210 L105,480 L85,480 L85,440 L95,440 L95,210 Z",
+    formal: isBack
+      ? "M78,200 L70,210 L65,480 L78,480 L78,450 L72,450 L72,430 L68,430 L68,210 Z M88,210 L94,210 L98,480 L112,480 L112,450 L104,450 L104,210 Z"
+      : "M122,200 L128,210 L132,480 L118,480 L118,450 L124,450 L122,440 L126,440 L126,210 Z M112,210 L106,210 L102,480 L88,480 L88,450 L96,450 L96,210 Z",
+    joggers: isBack
+      ? "M78,200 L70,210 L60,450 L70,455 L78,450 L78,430 L72,430 L74,410 L70,410 L70,210 Z M88,210 L96,210 L104,450 L96,455 L88,450 L88,430 L94,410 L96,410 L96,210 Z"
+      : "M122,200 L130,210 L138,450 L130,455 L122,450 L122,430 L128,430 L126,410 L130,410 L130,210 Z M112,210 L104,210 L96,450 L104,455 L112,450 L112,430 L106,430 L104,410 L104,210 Z",
+    chinos: isBack
+      ? "M78,200 L73,210 L65,475 L80,475 L80,455 L74,455 L74,210 Z M85,210 L91,210 L95,475 L108,475 L108,455 L100,455 L100,210 Z"
+      : "M122,200 L127,210 L132,475 L116,475 L116,455 L120,455 L120,210 Z M113,210 L107,210 L102,475 L88,475 L88,455 L94,455 L94,210 Z",
   };
 
-  const getPantsPath = () => {
-    switch (pantsStyle) {
-      case 'formal': return paths.pants_formal;
-      case 'joggers': return paths.pants_joggers;
-      case 'chinos': return paths.pants_chinos;
-      default: return paths.pants_jeans;
-    }
-  };
+  const getTshirtPath = () => tshirtPaths[tshirtStyle] || tshirtPaths.regular;
+  const getPantsPath = () => pantsPaths[pantsStyle] || pantsPaths.jeans;
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -232,12 +195,12 @@ export default function VirtualMannequin({ userMeasurements, selectedBrandId }: 
                   stroke="currentColor"
                   strokeWidth="1"
                 >
-                  {/* Body Outline */}
+                  {/* Mannequin Body Outline - full human shape */}
                   <path
-                    d={paths.body}
+                    d={mannequinBody}
                     stroke="currentColor"
                     strokeWidth="1.5"
-                    className="text-white/30"
+                    className="text-white/20"
                     fill="none"
                   />
 
@@ -256,13 +219,13 @@ export default function VirtualMannequin({ userMeasurements, selectedBrandId }: 
                     <g fill={tshirtColor}>
                       {viewMode === 'front' ? (
                         <>
-                          <ellipse cx="100" cy="108" rx="12" ry="4" />
-                          <path d="M92,108 L92,118 L108,118 L108,108" />
+                          <ellipse cx="100" cy="105" rx="12" ry="4" />
+                          <path d="M92,105 L92,115 L108,115 L108,105" />
                         </>
                       ) : (
                         <>
-                          <ellipse cx="100" cy="108" rx="12" ry="4" />
-                          <path d="M92,108 L92,118 L108,118 L108,108" />
+                          <ellipse cx="100" cy="105" rx="12" ry="4" />
+                          <path d="M92,105 L92,115 L108,115 L108,105" />
                         </>
                       )}
                     </g>
@@ -303,10 +266,49 @@ export default function VirtualMannequin({ userMeasurements, selectedBrandId }: 
                   {/* Joggers details - elastic cuffs */}
                   {pantsStyle === 'joggers' && (
                     <g stroke="currentColor" strokeWidth="1.2" fill="none" opacity="0.6">
-                      <line x1="72" y1="450" x2="128" y2="450" strokeDasharray="3 2" />
-                      <line x1="72" y1="452" x2="128" y2="452" strokeDasharray="3 2" />
+                      <line x1="72" y1="440" x2="128" y2="440" strokeDasharray="3 2" />
+                      <line x1="72" y1="442" x2="128" y2="442" strokeDasharray="3 2" />
                     </g>
                   )}
+
+                  {/* Chinos details - pocket bags */}
+                  {pantsStyle === 'chinos' && (
+                    <g stroke="#0056b2" strokeWidth="0.6" fill="none" opacity="0.5">
+                      {viewMode === 'front' ? (
+                        <>
+                          <path d="M80,230 Q85,235 90,230" />
+                          <path d="M110,230 Q115,235 120,230" />
+                        </>
+                      ) : (
+                        <>
+                          <path d="M80,230 Q85,235 90,230" />
+                          <path d="M110,230 Q115,235 120,230" />
+                        </>
+                      )}
+                    </g>
+                  )}
+
+                  {/* Formal details - pleats */}
+                  {pantsStyle === 'formal' && (
+                    <g stroke="#333" strokeWidth="0.5" fill="none" opacity="0.7">
+                      {viewMode === 'front' ? (
+                        <>
+                          <path d="M82,205 Q86,208 90,205" />
+                          <path d="M110,205 Q114,208 118,205" />
+                        </>
+                      ) : (
+                        <>
+                          <path d="M82,205 Q86,208 90,205" />
+                          <path d="M110,205 Q114,208 118,205" />
+                        </>
+                      )}
+                    </g>
+                  )}
+
+                  {/* Leg separation line */}
+                  <g stroke="currentColor" strokeWidth="0.5" opacity="0.4">
+                    <line x1="100" y1="200" x2="100" y2="480" />
+                  </g>
                 </svg>
 
                 {/* Measurement indicators overlay when user has measurements */}
@@ -327,118 +329,131 @@ export default function VirtualMannequin({ userMeasurements, selectedBrandId }: 
                     </svg>
                   </motion.div>
                 )}
+
+                {/* Style labels */}
+                <div className="mt-4 flex flex-wrap items-center justify-center gap-4 text-sm text-white/50">
+                  <span>T-Shirt: <span className="text-white capitalize">{tshirtStyle}</span></span>
+                  <span>Pants: <span className="text-white capitalize">{pantsStyle}</span></span>
+                </div>
               </div>
 
-              {/* Style labels */}
-              <div className="mt-4 flex flex-wrap items-center justify-center gap-4 text-sm text-white/50">
-                <span>T-Shirt: <span className="text-white capitalize">{tshirtStyle}</span></span>
-                <span>Pants: <span className="text-white capitalize">{pantsStyle}</span></span>
-              </div>
+              {/* Size Recommendations Panel */}
+              {(userMeasurements || brand) && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="premium-card p-6"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-xl font-light">Size Recommendations</h2>
+                    <button
+                      onClick={() => setShowRecommendations(!showRecommendations)}
+                      className="flex items-center gap-2 text-sm text-white/60 hover:text-white transition-colors"
+                    >
+                      <Eye size={16} className={showRecommendations ? 'rotate-180' : ''} />
+                      {showRecommendations ? 'Hide Details' : 'Show Details'}
+                    </button>
+                  </div>
+
+                  <AnimatePresence>
+                    {showRecommendations && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="space-y-4"
+                      >
+                        <div className="grid md:grid-cols-2 gap-6">
+                          {/* T-Shirt Recommendation */}
+                          <div className="bg-black/30 p-4 rounded-lg border border-white/10">
+                            <div className="flex items-center justify-between mb-3">
+                              <h3 className="font-medium">T-Shirt ({tshirtStyle})</h3>
+                              {brand && <span className="text-xs text-white/40 uppercase tracking-wider">{brand.logoText}</span>}
+                            </div>
+                            {tshirtRecommendation ? (
+                              <SizeBadge recommendation={tshirtRecommendation} />
+                            ) : (
+                              <div className="p-4 bg-white/5 border border-dashed border-white/20 rounded-xl flex items-center justify-center text-muted text-sm">
+                                {brand
+                                  ? 'No size chart available for tops from this brand'
+                                  : 'Select a brand and complete your profile to see recommendations'}
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Pants Recommendation */}
+                          <div className="bg-black/30 p-4 rounded-lg border border-white/10">
+                            <div className="flex items-center justify-between mb-3">
+                              <h3 className="font-medium">Pants ({pantsStyle})</h3>
+                              {brand && <span className="text-xs text-white/40 uppercase tracking-wider">{brand.logoText}</span>}
+                            </div>
+                            {pantsRecommendation ? (
+                              <SizeBadge recommendation={pantsRecommendation} />
+                            ) : (
+                              <div className="p-4 bg-white/5 border border-dashed border-white/20 rounded-xl flex items-center justify-center text-muted text-sm">
+                                {brand
+                                  ? 'No size chart available for bottoms from this brand'
+                                  : 'Select a brand and complete your profile to see recommendations'}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {brand && userMeasurements && (
+                          <div className="p-4 bg-white/5 rounded-lg border border-white/10 text-sm text-white/70">
+                            <p className="font-medium mb-2">How it works:</p>
+                            <ul className="space-y-1 list-disc list-inside">
+                              <li>Recommendations based on {brand.name} official size charts</li>
+                              <li>Your fit preference: <span className="capitalize text-white">{userMeasurements.fitPreference}</span></li>
+                              <li>Confidence score reflects measurement match accuracy</li>
+                              <li>Always verify with brand's official guide before purchasing</li>
+                            </ul>
+                          </div>
+                        )}
+
+                        {!userMeasurements && (
+                          <div className="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-center">
+                            <p className="text-yellow-400 text-sm">
+                              Complete your profile measurements to unlock personalized size recommendations.
+                            </p>
+                            <a href="/profile" className="inline-block mt-2 text-yellow-400 hover:underline text-sm font-medium">
+                              Go to Profile →
+                            </a>
+                          </div>
+                        )}
+
+                        {!brand && userMeasurements && (
+                          <div className="p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg text-center">
+                            <p className="text-blue-400 text-sm">
+                              Select a brand from the Brands panel to see specific size recommendations.
+                            </p>
+                          </div>
+                        )}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  {!showRecommendations && !userMeasurements && (
+                    <div className="text-center text-white/50 py-4">
+                      Complete your profile and select a brand to see size recommendations
+                    </div>
+                  )}
+                </motion.div>
+              )}
+
+              {/* Empty state when no brand and no measurements */}
+              {!userMeasurements && !brand && (
+                <div className="text-center text-white/50 py-8">
+                  <p className="text-white/50 text-sm">Select a brand to begin</p>
+                  <a href="/brands" className="text-white/60 hover:text-white transition-colors text-sm font-medium">Browse Brands →</a>
+                </div>
+              )}
             </div>
 
-            {/* Size Recommendations Panel */}
-            {(userMeasurements || brand) && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="premium-card p-6"
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-light">Size Recommendations</h2>
-                  <button
-                    onClick={() => setShowRecommendations(!showRecommendations)}
-                    className="flex items-center gap-2 text-sm text-white/60 hover:text-white transition-colors"
-                  >
-                    <Eye size={16} className={showRecommendations ? 'rotate-180' : ''} />
-                    {showRecommendations ? 'Hide Details' : 'Show Details'}
-                  </button>
-                </div>
-
-                <AnimatePresence>
-                  {showRecommendations && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="space-y-4"
-                    >
-                      <div className="grid md:grid-cols-2 gap-6">
-                        {/* T-Shirt Recommendation */}
-                        <div className="bg-black/30 p-4 rounded-lg border border-white/10">
-                          <div className="flex items-center justify-between mb-3">
-                            <h3 className="font-medium">T-Shirt ({tshirtStyle})</h3>
-                            {brand && <span className="text-xs text-white/40 uppercase tracking-wider">{brand.logoText}</span>}
-                          </div>
-                          {tshirtRecommendation ? (
-                            <SizeBadge recommendation={tshirtRecommendation} />
-                          ) : (
-                            <div className="p-4 bg-white/5 border border-dashed border-white/20 rounded-xl flex items-center justify-center text-muted text-sm">
-                              {brand
-                                ? 'No size chart available for tops from this brand'
-                                : 'Select a brand and complete your profile to see recommendations'}
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Pants Recommendation */}
-                        <div className="bg-black/30 p-4 rounded-lg border border-white/10">
-                          <div className="flex items-center justify-between mb-3">
-                            <h3 className="font-medium">Pants ({pantsStyle})</h3>
-                            {brand && <span className="text-xs text-white/40 uppercase tracking-wider">{brand.logoText}</span>}
-                          </div>
-                          {pantsRecommendation ? (
-                            <SizeBadge recommendation={pantsRecommendation} />
-                          ) : (
-                            <div className="p-4 bg-white/5 border border-dashed border-white/20 rounded-xl flex items-center justify-center text-muted text-sm">
-                              {brand
-                                ? 'No size chart available for bottoms from this brand'
-                                : 'Select a brand and complete your profile to see recommendations'}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {brand && userMeasurements && (
-                        <div className="p-4 bg-white/5 rounded-lg border border-white/10 text-sm text-white/70">
-                          <p className="font-medium mb-2">How it works:</p>
-                          <ul className="space-y-1 list-disc list-inside">
-                            <li>Recommendations based on {brand.name} official size charts</li>
-                            <li>Your fit preference: <span className="capitalize text-white">{userMeasurements.fitPreference}</span></li>
-                            <li>Confidence score reflects measurement match accuracy</li>
-                            <li>Always verify with brand's official guide before purchasing</li>
-                          </ul>
-                        </div>
-                      )}
-
-                      {!userMeasurements && (
-                        <div className="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-center">
-                          <p className="text-yellow-400 text-sm">
-                            Complete your profile measurements to unlock personalized size recommendations.
-                          </p>
-                          <a href="/profile" className="inline-block mt-2 text-yellow-400 hover:underline text-sm font-medium">
-                            Go to Profile →
-                          </a>
-                        </div>
-                      )}
-
-                      {!brand && userMeasurements && (
-                        <div className="p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg text-center">
-                          <p className="text-blue-400 text-sm">
-                            Select a brand from the Brands panel to see specific size recommendations.
-                          </p>
-                        </div>
-                      )}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                {!showRecommendations && !userMeasurements && (
-                  <div className="text-center text-white/50 py-4">
-                    Complete your profile and select a brand to see size recommendations
-                  </div>
-                )}
-              </motion.div>
-            )}
+            {/* Front/Back view info */}
+            <div className="mt-2 text-center text-white/40 text-sm">
+              View: <span className="capitalize">{viewMode}</span>
+            </div>
           </motion.div>
 
           {/* Controls Panel */}
@@ -455,9 +470,9 @@ export default function VirtualMannequin({ userMeasurements, selectedBrandId }: 
                 {BRANDS.map((b) => (
                   <button
                     key={b.id}
-                    onClick={() => selectedBrandId !== b.id}
+                    onClick={() => setInternalSelectedBrandId(b.id)}
                     className={`w-full text-left p-3 rounded-lg transition-all flex items-center justify-between ${
-                      selectedBrandId === b.id
+                      internalSelectedBrandId === b.id
                         ? 'bg-white/10 border border-white/20'
                         : 'hover:bg-white/5 border border-white/10'
                     }`}
@@ -469,7 +484,7 @@ export default function VirtualMannequin({ userMeasurements, selectedBrandId }: 
                   </button>
                 ))}
               </div>
-              {!selectedBrandId && (
+              {!internalSelectedBrandId && (
                 <p className="text-xs text-white/40 text-center">No brand selected - showing generic fit</p>
               )}
             </div>
@@ -552,8 +567,8 @@ export default function VirtualMannequin({ userMeasurements, selectedBrandId }: 
                         : 'border-white/10 hover:border-white/20 hover:bg-white/5'
                     }`}
                   >
-                    <span className="text-2xl block mb-1">{style.icon}</span>
-                    <span className="font-medium">{style.name}</span>
+                    <span className="text-2xl block mb-1">{style.name}</span>
+                    <span className="font-medium text-sm">{style.name}</span>
                   </button>
                 ))}
               </div>
@@ -573,8 +588,8 @@ export default function VirtualMannequin({ userMeasurements, selectedBrandId }: 
                         : 'border-white/10 hover:border-white/20 hover:bg-white/5'
                     }`}
                   >
-                    <span className="text-2xl block mb-1">{style.icon}</span>
-                    <span className="font-medium">{style.name}</span>
+                    <span className="text-2xl block mb-1">{style.name}</span>
+                    <span className="font-medium text-sm">{style.name}</span>
                   </button>
                 ))}
               </div>
