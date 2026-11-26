@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useAuth } from '../context/AuthContext';
-import { User, LogOut, LayoutDashboard, ShoppingBag, Layers, Tag } from 'lucide-react';
+import { User, LogOut, LayoutDashboard, ShoppingBag, Layers, Tag, Shirt } from 'lucide-react';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -19,6 +19,9 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-8 text-sm font-medium">
           <Link href="/products" className="text-white/70 hover:text-white transition-colors flex items-center gap-1.5">
             <ShoppingBag size={16} /> Products
+          </Link>
+          <Link href="/studio" className="text-white/70 hover:text-white transition-colors flex items-center gap-1.5">
+            <Shirt size={16} /> Studio
           </Link>
           <Link href="/brands" className="text-white/70 hover:text-white transition-colors flex items-center gap-1.5">
             <Layers size={16} /> Brands
